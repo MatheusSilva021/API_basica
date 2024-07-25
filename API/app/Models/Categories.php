@@ -11,4 +11,10 @@ class Categories extends Model
 
     public $timestamps = false;
     protected $fillable = ['category_Name'];
+    protected $primaryKey = 'category_ID';
+
+    public function products()
+    {
+        return $this->belongsToMany(Products::class, 'product_categories', 'category_ID', 'product_ID');
+    }
 }

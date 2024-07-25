@@ -12,6 +12,18 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 
+// GET Routes
+Route::get('/products', [ProductsController::class,'getProducts']);
+Route::get('/product/{id}', [ProductsController::class,'getProduct']);
+Route::get('/sizes', [SizesController::class,'getSizes']);
+Route::get('/categories', [CategoriesController::class,'getCategories']);
+
+// POST Routes
 Route::post('/sizeInsert',[SizesController::class, 'newSize']);
 Route::post('/categoryInsert',[CategoriesController::class, 'newCategory']);
-Route::get('/products', [ProductsController::class,'getProducts']);
+Route::post('/productInsert',[ProductsController::class, 'newProduct']);
+
+// PUT Routes
+
+
+// DELETE Routes

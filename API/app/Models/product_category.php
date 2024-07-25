@@ -8,4 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class product_category extends Model
 {
     use HasFactory;
+
+    protected $guarded = [];
+    public $timestamps = false;
+
+    
+
 }

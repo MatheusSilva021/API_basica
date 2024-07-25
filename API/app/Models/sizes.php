@@ -8,4 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 class sizes extends Model
 {
     use HasFactory;
+
+    public $timestamps = false;
+    protected $fillable = ['Size'];
+    protected $primaryKey = 'size_ID';
+
+    public function products()
+    {
+        $this->belongsToMany(Products::class,'product_categories', 'size_ID', 'product_ID');
+    }
 }

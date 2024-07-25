@@ -12,4 +12,9 @@ class categoriesController extends Controller
     {
        return response()->json(Categories::create($request->all()),201);
     }
+
+    public function getCategories()
+    {
+        return response()->json(Categories::all(), 200);
+    }
 }

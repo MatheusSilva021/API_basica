@@ -12,4 +12,9 @@ class sizesController extends Controller
     {
         return response()->json(sizes::create($request->all()), 201);
     }
+
+    public function getSizes()
+    {
+        return response()->json(sizes::all(), 200);
+    }
 }
