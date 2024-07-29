@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('product_categories', function (Blueprint $table) {
             $table->foreignId('product_ID');
             $table->foreignId('category_ID');
-            $table->foreign('product_ID')->references('product_ID')->on('products');
-            $table->foreign('category_ID')->references('category_ID')->on('categories');
+            $table->foreign('product_ID')->references('product_ID')->on('products')->cascadeOnDelete();
+            $table->foreign('category_ID')->references('category_ID')->on('categories')->cascadeOnDelete();
         });
     }
 

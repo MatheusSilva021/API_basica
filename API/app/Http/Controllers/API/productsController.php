@@ -2,63 +2,112 @@
 
 namespace App\Http\Controllers\API;
 
+use Exception;
 use App\Models\sizes;
 use App\Models\Products;
 use App\Models\Categories;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\product_images;
+use Illuminate\Support\Facades\Storage;
 
 class productsController extends Controller
 {
     public function getProducts()
     {
-        return response()->json(Products::with(['productCategories', 'productSizes'])->get(), 200);
+        try {
+            return response()->json(Products::with(['productCategories', 'productSizes', 'productImages'])->get(), 200);
+        } catch (Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 
     public function getProduct(int $id)
     {
-        return response()->json(Products::where('product_ID','=',$id)->with('productSizes')->get(),200);
+        try {
+            return response()->json(Products::where('product_ID', '=', $id)->with(['productCategories', 'productSizes', 'productImages'])->first(), 200);
+        } catch (Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 
-    public function newProduct(Request $request){
-        $product_Info = [
-            "product_Name" => $request->product_Name,
-            "product_Description" => $request->product_Description,
-            "quantity_in_stock" => $request->quantity_in_stock,
-            "Price" => $request->Price,
-            "Discount" => $request->Discount,
-        ];
+    public function newProduct(Request $request)
+    {
+        try {
+            $product_Info = [
+                "product_Name" => $request->product_Name,
+                "product_Description" => $request->product_Description,
+                "quantity_in_stock" => $request->quantity_in_stock,
+                "Price" => $request->Price,
+                "Discount" => $request->Discount,
+            ];
 
-        $sizes = explode(", ", $request->product_Sizes);
-        $categories = explode(", ", $request->product_Categories);
-        $images = explode(", ", $request->product_Images);
-        $sizes_id = [];
-        $categories_id = [];
+            $sizes = $request->product_Sizes;
+            $categories = $request->product_Categories;
+            $images = $request->product_Images;
+            $sizes_id = [];
+            $categories_id = [];
 
-        foreach($sizes as $size){
-            $size_ID = sizes::where('Size',$size)->first();
-            $sizes_id[] = $size_ID->size_ID;
+            foreach ($sizes as $size) {
+                $size_ID = sizes::where('Size', $size)->first();
+                $sizes_id[] = $size_ID->size_ID;
+            }
+
+
+            foreach ($categories as $category) {
+                $category_ID = Categories::where('category_Name', $category)->first();
+                $categories_id[] = $category_ID->category_ID;
+            }
+
+            $product = Products::create($product_Info);
+
+            foreach ($sizes_id as $id) {
+                $product->productSizes()->attach($id);
+            }
+
+            foreach ($categories_id as $id) {
+                $product->productCategories()->attach($id);
+            }
+
+            foreach ($images as $image) {
+                $path = $image->store('images', 'public');
+                $product->productImages()->create(['image_Url' => $path]);
+            }
+
+            return response()->json($product, 201);
+        } catch (Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
         }
+    }
 
-        foreach($categories as $category){
-            $category_ID = Categories::where('category_Name',$category)->first();
-            $categories_id[] = $category_ID->category_ID;
+    public function updateProduct(Request $request, int $id)
+    {
+        try {
+            $product = Products::where('product_ID', $id)->first();
+            $product->fill($request->all());
+            $product->save();
+
+            return response()->json($product, 200);
+        } catch (Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
         }
+    }
 
-        $product = Products::create($product_Info);
+    public function deleteProduct(int $id)
+    {
+        try{
+            $product = Products::where('product_ID', $id)->first();
 
-        foreach($sizes_id as $id){
-            $product->productSizes()->attach($id);
+            $image_path = product_images::where('product_ID', $id)->first();
+
+            if($image_path){
+                Storage::disk('public')->delete($image_path->image_Url);
+            }
+
+            $product->delete();
+            return response()->json(null, 204);
+        }catch (Exception $e){
+            return response()->json(['error' => $e->getMessage()], 500);
         }
-
-        foreach($categories_id as $id){
-            $product->productCategories()->attach($id);
-        }
-
-        foreach($images as $image){
-            $product->productImages()->create(['image_Url' => $image]);
-        }
-
-        return response()->json($product, 201);
     }
 }

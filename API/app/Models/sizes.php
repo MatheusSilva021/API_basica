@@ -10,7 +10,7 @@ class sizes extends Model
     use HasFactory;
 
     public $timestamps = false;
-    protected $fillable = ['Size'];
+    protected $fillable = ['Size','Abbreviation'];
     protected $primaryKey = 'size_ID';
 
     public function products()

@@ -24,6 +24,11 @@ Route::post('/categoryInsert',[CategoriesController::class, 'newCategory']);
 Route::post('/productInsert',[ProductsController::class, 'newProduct']);
 
 // PUT Routes
-
+Route::put('/sizeUpdate/{id}',[SizesController::class,'updateSize']);
+Route::put('/categoryUpdate/{id}',[CategoriesController::class,'updateCategory']);
+Route::put('/productUpdate/{id}',[ProductsController::class,'updateProduct']);
 
 // DELETE Routes
+Route::delete('/sizeDelete/{id}',[SizesController::class,'deleteSize']);
+Route::delete('/categoryDelete/{id}',[CategoriesController::class,'deleteCategory']);
+Route::delete('/productDelete/{id}',[ProductsController::class,'deleteProduct']);

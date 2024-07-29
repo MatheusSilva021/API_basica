@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('sizes', function (Blueprint $table) {
             $table->id('size_ID');
             $table->string('Size');
+            $table->string('Abbreviation');
         });
     }
 
