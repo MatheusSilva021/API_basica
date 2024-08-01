@@ -45,28 +45,16 @@ class productsController extends Controller
             $sizes = $request->product_Sizes;
             $categories = $request->product_Categories;
             $images = $request->product_Images;
-            $sizes_id = [];
-            $categories_id = [];
+            $product = Products::create($product_Info);
 
             foreach ($sizes as $size) {
                 $size_ID = sizes::where('Size', $size)->first();
-                $sizes_id[] = $size_ID->size_ID;
+                $product->productSizes()->attach($size_ID);
             }
-
 
             foreach ($categories as $category) {
                 $category_ID = Categories::where('category_Name', $category)->first();
-                $categories_id[] = $category_ID->category_ID;
-            }
-
-            $product = Products::create($product_Info);
-
-            foreach ($sizes_id as $id) {
-                $product->productSizes()->attach($id);
-            }
-
-            foreach ($categories_id as $id) {
-                $product->productCategories()->attach($id);
+                $product->productCategories()->attach($category_ID);
             }
 
             foreach ($images as $image) {
@@ -83,9 +71,38 @@ class productsController extends Controller
     public function updateProduct(Request $request, int $id)
     {
         try {
-            $product = Products::where('product_ID', $id)->first();
-            $product->fill($request->all());
-            $product->save();
+            $product = Products::findOrFail($id);
+            $product->update([
+                "product_Name" => $request->product_Name,
+                "product_Description" => $request->product_Description,
+                "quantity_in_Stock" => $request->quantity_in_Stock,
+                "Price" => $request->Price,
+                "Discount" => $request->Discount,
+            ]);
+
+            if ($request->product_Categories) {
+                $categories = $request->product_Categories;
+                $categories_ID = [];
+                foreach ($categories as $category) {
+                    $category_ID = Categories::where('category_Name', $category)->first();
+                    if ($category_ID) {
+                        $categories_ID[] = $category_ID->category_ID;
+                    }
+                }
+                $product->productCategories()->sync($categories_ID);
+            }
+
+            if ($request->product_Sizes) {
+                $sizes = $request->product_Sizes;
+                $size_IDs = [];
+                foreach ($sizes as $size) {
+                    $size_ID = sizes::where('Size', $size)->first();
+                    if ($size_ID) {
+                        $size_IDs[] = $size_ID->size_ID;
+                    }
+                }
+                $product->productSizes()->sync($size_IDs);
+            }
 
             return response()->json($product, 200);
         } catch (Exception $e) {
@@ -95,18 +112,18 @@ class productsController extends Controller
 
     public function deleteProduct(int $id)
     {
-        try{
+        try {
             $product = Products::where('product_ID', $id)->first();
 
             $image_path = product_images::where('product_ID', $id)->first();
 
-            if($image_path){
+            if ($image_path) {
                 Storage::disk('public')->delete($image_path->image_Url);
             }
 
             $product->delete();
             return response()->json(null, 204);
-        }catch (Exception $e){
+        } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
