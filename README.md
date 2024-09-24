@@ -1,4 +1,5 @@
 API básica feita em Laravel. Estava estudando sobre APIs em Laravel e achei uma boa ideia fazer uma pequena API com o tema "Loja de Roupas".
+
 Rotas da API:
 
 	 - Get
