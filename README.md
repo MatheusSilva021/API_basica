@@ -1,5 +1,6 @@
 API básica feita em Laravel. Estava estudando sobre APIs em Laravel e achei uma boa ideia fazer uma pequena API com o tema "Loja de Roupas".
 Rotas da API:
+
 	 - Get
 		/products : retorna todos produtos
 		/sizes : retorna todos tamanhos
@@ -7,10 +8,10 @@ Rotas da API:
 		/product/{id} : retorna um produto especifico
 	
 	 - Post
-		/sizeInsert : Insere um novo tamanho, necessário: String Size
-											   String Abbreviation
+		/sizeInsert : Insere um novo tamanho, necessário: String Size,
+								  String Abbreviation.
 											   
-		/categoryInsert: Insere uma nova categoria, necessário: String category_Name
+		/categoryInsert: Insere uma nova categoria, necessário: String category_Name.
 		
 		/productInsert: Insere um novo produto, necessário: 
 		String product_Name,
@@ -19,8 +20,8 @@ Rotas da API:
 		Double Price,
 		Int Discount,
 		String product_Sizes,
-		String product_Categories
-		File product_Images
+		String product_Categories,
+		File product_Images.
 	
 	- Put
 		/sizeUpdate/{id} : Atualiza um tamanho
